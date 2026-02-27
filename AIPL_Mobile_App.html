@@ -1,0 +1,1771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0D2137">
+<title>AIPL Construction</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:   #0D2137;
+  --navy2:  #132A45;
+  --blue:   #1565C0;
+  --blue2:  #1976D2;
+  --teal:   #00838F;
+  --green:  #2E7D32;
+  --green2: #43A047;
+  --orange: #E65100;
+  --amber:  #F57F17;
+  --red:    #C62828;
+  --red2:   #E53935;
+  --purple: #6A1B9A;
+  --bg:     #F0F4F8;
+  --white:  #FFFFFF;
+  --border: #E2E8F0;
+  --text:   #0D2137;
+  --text2:  #475569;
+  --text3:  #94A3B8;
+  --card-shadow: 0 2px 12px rgba(13,33,55,0.08);
+  --bottom-nav-h: 68px;
+  --top-bar-h: 56px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* ─── TOP BAR ─── */
+.topbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--top-bar-h);
+  background: var(--navy);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 10px;
+  z-index: 100;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
+
+.topbar-menu {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.1);
+  border: none;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.topbar-menu span {
+  display: block;
+  width: 18px; height: 2px;
+  background: white;
+  border-radius: 2px;
+  transition: all 0.3s;
+}
+
+.topbar-logo {
+  font-size: 18px;
+  font-weight: 900;
+  color: white;
+  letter-spacing: -0.5px;
+}
+
+.topbar-logo em { color: #FFAB40; font-style: normal; }
+
+.topbar-project {
+  font-size: 10px;
+  color: rgba(255,255,255,0.55);
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+  padding: 3px 8px;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.topbar-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.notif-btn {
+  position: relative;
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.1);
+  border: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+
+.notif-dot {
+  position: absolute;
+  top: 6px; right: 6px;
+  width: 8px; height: 8px;
+  background: var(--red2);
+  border-radius: 50%;
+  border: 2px solid var(--navy);
+}
+
+.user-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px 4px 4px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.user-avatar {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  color: white;
+}
+
+.user-name { font-size: 12px; color: white; font-weight: 600; }
+
+/* ─── DRAWER OVERLAY ─── */
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 200;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  backdrop-filter: blur(2px);
+}
+
+.drawer-overlay.open { opacity: 1; pointer-events: all; }
+
+/* ─── SIDE DRAWER ─── */
+.drawer {
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  width: 280px;
+  background: var(--white);
+  z-index: 201;
+  transform: translateX(-100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 4px 0 32px rgba(0,0,0,0.2);
+}
+
+.drawer.open { transform: translateX(0); }
+
+.drawer-head {
+  background: var(--navy);
+  padding: 48px 20px 20px;
+}
+
+.drawer-avatar {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 10px;
+}
+
+.drawer-name { font-size: 17px; font-weight: 800; color: white; }
+.drawer-role { font-size: 12px; color: rgba(255,255,255,0.55); margin-top: 2px; }
+
+.drawer-body { flex: 1; overflow-y: auto; padding: 12px; }
+
+.drawer-section {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text3);
+  padding: 10px 8px 4px;
+}
+
+.drawer-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text2);
+  transition: all 0.15s;
+  margin-bottom: 2px;
+}
+
+.drawer-item:hover, .drawer-item.active { background: #EEF2FF; color: var(--blue); }
+.drawer-item .di-icon { font-size: 18px; width: 24px; text-align: center; }
+
+.drawer-logout {
+  padding: 16px;
+  border-top: 1px solid var(--border);
+}
+
+/* ─── MAIN SCROLL AREA ─── */
+.main-scroll {
+  position: fixed;
+  top: var(--top-bar-h);
+  left: 0; right: 0;
+  bottom: calc(var(--bottom-nav-h) + var(--safe-bottom));
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.page { display: none; padding: 16px; }
+.page.active { display: block; animation: pageIn 0.25s ease; }
+
+@keyframes pageIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+/* ─── BOTTOM NAV ─── */
+.bottom-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: calc(var(--bottom-nav-h) + var(--safe-bottom));
+  padding-bottom: var(--safe-bottom);
+  background: var(--white);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  z-index: 100;
+  box-shadow: 0 -4px 20px rgba(13,33,55,0.08);
+}
+
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  cursor: pointer;
+  padding: 8px 4px;
+  border-radius: 12px;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.nav-item.active .nav-icon { transform: translateY(-2px); }
+.nav-item.active .nav-label { color: var(--blue); font-weight: 800; }
+
+.nav-icon {
+  font-size: 22px;
+  transition: transform 0.2s;
+  line-height: 1;
+}
+
+.nav-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text3);
+  transition: color 0.2s;
+}
+
+.nav-pip {
+  position: absolute;
+  top: 6px;
+  width: 6px; height: 6px;
+  background: var(--blue);
+  border-radius: 50%;
+}
+
+/* ─── SECTION HEADING ─── */
+.sec-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.sec-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.sec-link {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--blue);
+  cursor: pointer;
+}
+
+/* ─── STAT CARDS ROW ─── */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.stat-card {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--sc-color, var(--blue));
+}
+
+.stat-icon { font-size: 22px; margin-bottom: 8px; }
+.stat-val {
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--sc-color, var(--blue));
+  margin-bottom: 2px;
+}
+.stat-lbl { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.3px; }
+.stat-chg { font-size: 10px; color: var(--text3); margin-top: 4px; }
+
+/* ─── CARD ─── */
+.card {
+  background: var(--white);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.card-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.card-body { padding: 14px 16px; }
+
+/* ─── HERO PUNCH CARD ─── */
+.punch-hero {
+  background: linear-gradient(135deg, var(--navy) 0%, #1A3A5C 100%);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.punch-hero::after {
+  content: '';
+  position: absolute;
+  right: -30px; top: -30px;
+  width: 140px; height: 140px;
+  background: radial-gradient(circle, rgba(255,171,64,0.15) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.punch-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.punch-clock {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 32px;
+  font-weight: 600;
+  color: white;
+  line-height: 1;
+}
+
+.punch-date {
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.gps-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 20px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.8);
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+.gps-dot-anim {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--green2);
+  animation: gpsPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes gpsPulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.4;transform:scale(1.4);} }
+
+.punch-btn-wrap {
+  display: flex;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.punch-btn {
+  flex: 1;
+  padding: 14px;
+  border-radius: 14px;
+  border: none;
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
+  letter-spacing: 0.3px;
+}
+
+.punch-btn:active { transform: scale(0.96); }
+
+.punch-in-btn {
+  background: linear-gradient(135deg, var(--green2), var(--green));
+  color: white;
+  box-shadow: 0 4px 16px rgba(46,125,50,0.4);
+}
+
+.punch-out-btn {
+  background: linear-gradient(135deg, var(--red2), var(--red));
+  color: white;
+  box-shadow: 0 4px 16px rgba(198,40,40,0.4);
+}
+
+.punch-status-strip {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.pss-item {
+  flex: 1;
+  padding: 8px 10px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 10px;
+  text-align: center;
+}
+
+.pss-val { font-size: 13px; font-weight: 800; color: white; font-family: 'JetBrains Mono', monospace; }
+.pss-lbl { font-size: 9px; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 0.3px; margin-top: 2px; }
+
+/* ─── PROJECT CARDS (mobile) ─── */
+.proj-card {
+  background: var(--white);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.proj-card:active { transform: scale(0.98); }
+
+.proj-card-bar { height: 4px; }
+
+.proj-card-body { padding: 14px; }
+
+.proj-card-row1 {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 6px;
+}
+
+.proj-name {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text);
+  flex: 1;
+  padding-right: 8px;
+  line-height: 1.3;
+}
+
+.proj-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 20px;
+  flex-shrink: 0;
+}
+
+.b-ongoing   { background: #E8F5E9; color: #2E7D32; border: 1px solid #A5D6A7; }
+.b-completed { background: #E3F2FD; color: #1565C0; border: 1px solid #90CAF9; }
+.b-hold      { background: #FFF8E1; color: #F57F17; border: 1px solid #FFE082; }
+
+.proj-client { font-size: 11px; color: var(--text3); margin-bottom: 10px; }
+
+.proj-meta-row {
+  display: flex;
+  gap: 0;
+  margin-bottom: 10px;
+}
+
+.proj-meta-item {
+  flex: 1;
+  padding-right: 10px;
+}
+
+.proj-meta-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text3); margin-bottom: 2px; }
+.proj-meta-val { font-size: 13px; font-weight: 800; color: var(--text); }
+
+.proj-progress-wrap { }
+
+.proj-prog-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  margin-bottom: 5px;
+  color: var(--text2);
+}
+
+.proj-prog-bar {
+  height: 6px;
+  background: #EEF2FF;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.proj-prog-fill {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.6s ease;
+}
+
+.proj-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  background: #F8FAFC;
+}
+
+.proj-days { font-size: 11px; font-weight: 700; }
+.proj-team { display: flex; }
+.proj-team-av {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--blue);
+  color: white;
+  font-size: 8px;
+  font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid white;
+  margin-left: -6px;
+}
+.proj-team-av:first-child { margin-left: 0; }
+
+/* ─── ALERT CARDS ─── */
+.alert-card {
+  border-radius: 12px;
+  border: 1px solid;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.alert-card:active { transform: scale(0.98); }
+
+.alert-label { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.alert-title { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+.alert-sub   { font-size: 11px; opacity: 0.7; }
+
+.ac-critical { background: #FFF5F5; border-color: #FEB2B2; color: #C53030; }
+.ac-high     { background: #FFFAF0; border-color: #FBD38D; color: #C05621; }
+.ac-info     { background: #EBF8FF; border-color: #90CDF4; color: #2B6CB0; }
+.ac-stock    { background: #FFFAF0; border-color: #F6AD55; color: #C05621; }
+
+/* ─── ATTENDANCE TABLE MOBILE ─── */
+.att-row {
+  display: flex;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  gap: 10px;
+}
+.att-row:last-child { border-bottom: none; }
+
+.att-av {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  font-weight: 800;
+  color: white;
+  flex-shrink: 0;
+}
+
+.att-info { flex: 1; }
+.att-name { font-size: 13px; font-weight: 700; color: var(--text); }
+.att-desig { font-size: 11px; color: var(--text3); }
+.att-time { font-size: 11px; color: var(--text2); font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
+
+.att-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+
+/* Status switch buttons */
+.att-status-row { display: flex; gap: 4px; }
+.ss-btn {
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: transparent;
+  font-family: 'Nunito', sans-serif;
+}
+.ss-btn.p { border-color: #A5D6A7; color: #2E7D32; }
+.ss-btn.p.on { background: #E8F5E9; }
+.ss-btn.a { border-color: #EF9A9A; color: #C62828; }
+.ss-btn.a.on { background: #FFEBEE; }
+.ss-btn.h { border-color: #FFCC80; color: #E65100; }
+.ss-btn.h.on { background: #FFF3E0; }
+.ss-btn.l { border-color: #CE93D8; color: #6A1B9A; }
+.ss-btn.l.on { background: #F3E5F5; }
+
+/* ─── MR PO GRN MOBILE ─── */
+.workflow-tabs {
+  display: flex;
+  background: white;
+  border-radius: 14px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  margin-bottom: 14px;
+  box-shadow: var(--card-shadow);
+}
+
+.wf-tab {
+  flex: 1;
+  padding: 9px 4px;
+  border-radius: 10px;
+  text-align: center;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text3);
+  transition: all 0.2s;
+}
+
+.wf-tab.active { background: var(--navy); color: white; }
+
+.wf-item {
+  background: white;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  box-shadow: var(--card-shadow);
+  padding: 14px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.wf-item:active { transform: scale(0.98); }
+
+.wf-item-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 6px;
+}
+
+.wf-id { font-size: 11px; color: var(--text3); font-family: 'JetBrains Mono', monospace; }
+.wf-title { font-size: 14px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+.wf-meta { font-size: 11px; color: var(--text3); }
+.wf-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+.wf-amount { font-size: 14px; font-weight: 800; color: var(--navy); font-family: 'JetBrains Mono', monospace; }
+
+.badge {
+  display: inline-flex; align-items: center;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 800;
+  border: 1px solid;
+}
+.badge-green  { background: #E8F5E9; color: #2E7D32; border-color: #A5D6A7; }
+.badge-amber  { background: #FFF8E1; color: #F57F17; border-color: #FFE082; }
+.badge-red    { background: #FFEBEE; color: #C62828; border-color: #EF9A9A; }
+.badge-gray   { background: #F5F5F5; color: #616161; border-color: #E0E0E0; }
+.badge-blue   { background: #E3F2FD; color: #1565C0; border-color: #90CAF9; }
+
+/* ─── EMPLOYEES MOBILE ─── */
+.emp-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+}
+.emp-row:last-child { border-bottom: none; }
+.emp-row:active { background: #F8FAFC; border-radius: 10px; }
+
+.emp-av {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  font-weight: 800;
+  color: white;
+  flex-shrink: 0;
+}
+
+.emp-info { flex: 1; }
+.emp-name  { font-size: 14px; font-weight: 700; color: var(--text); }
+.emp-desig { font-size: 11px; color: var(--text3); }
+.emp-proj  { font-size: 11px; color: var(--blue); font-weight: 600; margin-top: 2px; }
+
+.emp-arrow { font-size: 16px; color: var(--text3); }
+
+/* ─── MODULE GRID ─── */
+.module-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.mod-btn {
+  background: white;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  box-shadow: var(--card-shadow);
+  padding: 14px 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.mod-btn:active { transform: scale(0.92); background: #EEF2FF; }
+.mod-icon { font-size: 24px; margin-bottom: 5px; }
+.mod-label { font-size: 10px; font-weight: 700; color: var(--text2); line-height: 1.2; }
+
+/* ─── FAB BUTTON ─── */
+.fab {
+  position: fixed;
+  bottom: calc(var(--bottom-nav-h) + var(--safe-bottom) + 16px);
+  right: 16px;
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: var(--blue);
+  color: white;
+  font-size: 24px;
+  border: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 20px rgba(21,101,192,0.4);
+  z-index: 50;
+  transition: all 0.2s;
+}
+.fab:active { transform: scale(0.92); }
+
+/* ─── BOTTOM SHEET MODAL ─── */
+.sheet-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 300;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  backdrop-filter: blur(2px);
+}
+.sheet-overlay.open { opacity: 1; pointer-events: all; }
+
+.sheet {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  background: white;
+  border-radius: 24px 24px 0 0;
+  padding: 0 0 calc(16px + var(--safe-bottom));
+  z-index: 301;
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.sheet.open { transform: translateY(0); }
+
+.sheet-handle {
+  width: 40px; height: 4px;
+  background: var(--border);
+  border-radius: 4px;
+  margin: 12px auto 0;
+}
+
+.sheet-head {
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sheet-title { font-size: 17px; font-weight: 800; }
+.sheet-close { font-size: 22px; cursor: pointer; color: var(--text3); }
+
+.sheet-body { padding: 16px 20px; }
+.sheet-foot { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; gap: 10px; }
+
+/* ─── FORM ELEMENTS ─── */
+.flabel { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text3); display: block; margin-bottom: 5px; }
+.finput, .fselect {
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 15px;
+  font-family: 'Nunito', sans-serif;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+  margin-bottom: 14px;
+}
+.finput:focus, .fselect:focus { border-color: var(--blue); }
+.finput::placeholder { color: var(--text3); }
+
+/* ─── BUTTONS ─── */
+.btn {
+  padding: 13px 20px;
+  border-radius: 12px;
+  border: none;
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: var(--blue); color: white; flex: 1; }
+.btn-success { background: var(--green); color: white; flex: 1; }
+.btn-danger  { background: var(--red); color: white; }
+.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text2); flex: 1; }
+.btn-sm { padding: 8px 14px; font-size: 13px; border-radius: 9px; }
+
+/* ─── TOAST ─── */
+.toast-wrap {
+  position: fixed;
+  top: calc(var(--top-bar-h) + 10px);
+  left: 16px; right: 16px;
+  z-index: 500;
+  pointer-events: none;
+}
+
+.toast-item {
+  background: var(--navy);
+  color: white;
+  border-radius: 14px;
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  animation: toastIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border-left: 4px solid var(--toast-color, var(--blue));
+}
+
+@keyframes toastIn { from { opacity:0; transform:translateY(-10px) scale(0.95); } to { opacity:1; transform:translateY(0) scale(1); } }
+
+/* ─── LOGIN SCREEN ─── */
+#login-screen {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(160deg, var(--navy) 0%, #1A3A5C 70%, #0D4A6B 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 1000;
+}
+
+.login-logo-wrap {
+  width: 72px; height: 72px;
+  background: linear-gradient(135deg, var(--blue), var(--teal));
+  border-radius: 20px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 32px rgba(0,131,143,0.4);
+}
+
+.login-title { font-size: 28px; font-weight: 900; color: white; text-align: center; margin-bottom: 4px; }
+.login-sub { font-size: 13px; color: rgba(255,255,255,0.5); text-align: center; margin-bottom: 36px; }
+
+.login-card {
+  width: 100%;
+  max-width: 380px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 24px;
+  padding: 24px;
+  backdrop-filter: blur(20px);
+}
+
+.login-input {
+  width: 100%;
+  padding: 14px 16px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 12px;
+  color: white;
+  font-size: 16px;
+  font-family: 'Nunito', sans-serif;
+  outline: none;
+  margin-bottom: 12px;
+  transition: border-color 0.2s;
+}
+.login-input::placeholder { color: rgba(255,255,255,0.35); }
+.login-input:focus { border-color: rgba(255,255,255,0.4); }
+
+.login-btn {
+  width: 100%;
+  padding: 15px;
+  background: var(--blue);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-family: 'Nunito', sans-serif;
+  font-size: 17px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 4px;
+}
+.login-btn:active { transform: scale(0.97); }
+
+.login-demo {
+  margin-top: 16px;
+  padding: 12px;
+  background: rgba(255,171,64,0.1);
+  border: 1px solid rgba(255,171,64,0.2);
+  border-radius: 12px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.7);
+  text-align: center;
+  line-height: 1.6;
+}
+
+.login-demo strong { color: #FFAB40; }
+
+.login-err {
+  background: rgba(229,57,53,0.15);
+  border: 1px solid rgba(229,57,53,0.3);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #EF9A9A;
+  margin-bottom: 12px;
+  display: none;
+}
+
+/* ─── PUNCH MODAL ─── */
+.selfie-ring {
+  width: 100px; height: 100px;
+  border-radius: 50%;
+  border: 3px dashed var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 40px;
+  margin: 0 auto 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.selfie-ring.taken { border-color: var(--green2); border-style: solid; }
+
+.gps-info-box {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 14px;
+}
+.gps-info-row { display: flex; justify-content: space-between; align-items: center; }
+.gps-info-label { font-size: 12px; color: var(--text3); font-weight: 600; }
+.gps-info-val { font-size: 12px; font-family: 'JetBrains Mono', monospace; color: var(--blue); }
+
+/* ─── DIVIDER ─── */
+.divider { height: 1px; background: var(--border); margin: 12px 0; }
+
+/* ─── EMPTY STATE ─── */
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--text3);
+}
+.empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.4; }
+.empty-text { font-size: 14px; }
+
+/* Search input */
+.search-bar {
+  width: 100%;
+  padding: 12px 14px 12px 40px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  font-size: 14px;
+  font-family: 'Nunito', sans-serif;
+  color: var(--text);
+  outline: none;
+  box-shadow: var(--card-shadow);
+  margin-bottom: 14px;
+  transition: border-color 0.2s;
+}
+.search-bar:focus { border-color: var(--blue); }
+.search-wrap { position: relative; }
+.search-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); font-size: 16px; color: var(--text3); }
+</style>
+</head>
+<body>
+
+<!-- ═══ LOGIN SCREEN ═══ -->
+<div id="login-screen">
+  <div class="login-logo-wrap">🏗️</div>
+  <div class="login-title">AIPL</div>
+  <div class="login-sub">Construction Management System</div>
+
+  <div class="login-card">
+    <div class="login-err" id="login-err">⚠️ Invalid mobile or password</div>
+    <input class="login-input" type="tel" maxlength="10" id="login-mobile" placeholder="📱 Mobile Number">
+    <div style="position:relative;">
+      <input class="login-input" type="password" id="login-pwd" placeholder="🔒 Password" style="padding-right:50px;">
+      <span onclick="togglePwd()" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:18px;cursor:pointer;color:rgba(255,255,255,0.5);">👁</span>
+    </div>
+    <button class="login-btn" onclick="doLogin()">Sign In →</button>
+
+    <div class="login-demo">
+      <strong>Demo:</strong> Mobile <strong>9999999999</strong> · Password <strong>admin123</strong>
+    </div>
+  </div>
+
+  <div style="margin-top:16px;font-size:12px;color:rgba(255,255,255,0.35);text-align:center;">
+    Atmagaurav Infra Pvt Ltd © 2026
+  </div>
+</div>
+
+<!-- ═══ MAIN APP ═══ -->
+<div id="app" style="display:none;">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <button class="topbar-menu" onclick="toggleDrawer()">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="topbar-logo">AIPL<em>.</em></div>
+    <div class="topbar-project" id="topbar-project">NH-48 Bypass</div>
+    <div class="topbar-right">
+      <button class="notif-btn" onclick="showToast('3 new alerts', 'info')">
+        🔔 <div class="notif-dot"></div>
+      </button>
+      <div class="user-chip" onclick="toggleDrawer()">
+        <div class="user-avatar" id="topbar-avatar" style="background:#1565C0;">AD</div>
+        <span class="user-name" id="topbar-name">Admin</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- DRAWER OVERLAY -->
+  <div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+
+  <!-- SIDE DRAWER -->
+  <div class="drawer" id="drawer">
+    <div class="drawer-head">
+      <div class="drawer-avatar" id="drawer-avatar" style="background:#1565C0;">AD</div>
+      <div class="drawer-name" id="drawer-name">Admin User</div>
+      <div class="drawer-role" id="drawer-role">Administrator</div>
+    </div>
+    <div class="drawer-body">
+      <div class="drawer-section">Main</div>
+      <div class="drawer-item active" onclick="navTo('home');closeDrawer()"><span class="di-icon">🏠</span>Home</div>
+      <div class="drawer-item" onclick="navTo('projects');closeDrawer()"><span class="di-icon">🏗️</span>Projects</div>
+      <div class="drawer-section">Modules</div>
+      <div class="drawer-item" onclick="navTo('attendance');closeDrawer()"><span class="di-icon">📅</span>Attendance</div>
+      <div class="drawer-item" onclick="navTo('mrpogrann');closeDrawer()"><span class="di-icon">📦</span>MR → PO → GRN</div>
+      <div class="drawer-item" onclick="navTo('employees');closeDrawer()"><span class="di-icon">👷</span>Employees</div>
+      <div class="drawer-item" onclick="showToast('RA Bill module coming soon','info');closeDrawer()"><span class="di-icon">🧾</span>RA Bills</div>
+      <div class="drawer-item" onclick="showToast('Payment Ledger coming soon','info');closeDrawer()"><span class="di-icon">💰</span>Payments</div>
+      <div class="drawer-item" onclick="showToast('DSR module coming soon','info');closeDrawer()"><span class="di-icon">📝</span>DSR</div>
+      <div class="drawer-section">Masters</div>
+      <div class="drawer-item" onclick="showToast('Vendor Master coming soon','info');closeDrawer()"><span class="di-icon">🏪</span>Vendors</div>
+      <div class="drawer-item" onclick="showToast('Material Master coming soon','info');closeDrawer()"><span class="di-icon">🧱</span>Materials</div>
+      <div class="drawer-section">System</div>
+      <div class="drawer-item" onclick="showToast('Reports module coming soon','info');closeDrawer()"><span class="di-icon">📈</span>Reports</div>
+      <div class="drawer-item" onclick="showToast('Settings coming soon','info');closeDrawer()"><span class="di-icon">⚙️</span>Settings</div>
+    </div>
+    <div class="drawer-logout">
+      <button class="btn btn-outline" style="width:100%;color:#C62828;border-color:#FFCDD2;" onclick="doLogout()">🚪 Logout</button>
+    </div>
+  </div>
+
+  <!-- MAIN SCROLL -->
+  <div class="main-scroll">
+
+    <!-- ═══ HOME PAGE ═══ -->
+    <div class="page active" id="page-home">
+
+      <!-- Punch Hero -->
+      <div class="punch-hero">
+        <div class="punch-top">
+          <div>
+            <div class="punch-clock" id="hero-clock">--:--:--</div>
+            <div class="punch-date" id="hero-date">Loading...</div>
+          </div>
+          <div class="gps-pill">
+            <div class="gps-dot-anim" id="gps-dot"></div>
+            <span id="gps-label">Locating...</span>
+          </div>
+        </div>
+        <div class="punch-btn-wrap">
+          <button class="punch-btn punch-in-btn" id="punch-btn" onclick="openPunchModal()">
+            📍 Punch In
+          </button>
+        </div>
+        <div class="punch-status-strip">
+          <div class="pss-item"><div class="pss-val" id="pss-present">18/21</div><div class="pss-lbl">Present</div></div>
+          <div class="pss-item"><div class="pss-val" id="pss-mytime">--:--</div><div class="pss-lbl">My Time</div></div>
+          <div class="pss-item"><div class="pss-val" style="color:#FFAB40;">92%</div><div class="pss-lbl">Month %</div></div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="sec-head"><div class="sec-title">Overview</div><span class="sec-link" onclick="navTo('projects')">See all</span></div>
+      <div class="stat-row">
+        <div class="stat-card" style="--sc-color:#1565C0;">
+          <div class="stat-icon">🏗️</div>
+          <div class="stat-val">8</div>
+          <div class="stat-lbl">Active Projects</div>
+          <div class="stat-chg">▲ 2 this month</div>
+        </div>
+        <div class="stat-card" style="--sc-color:#E65100;">
+          <div class="stat-icon">💰</div>
+          <div class="stat-val">₹24.8Cr</div>
+          <div class="stat-lbl">Contract Value</div>
+          <div class="stat-chg">▲ 8.5% growth</div>
+        </div>
+        <div class="stat-card" style="--sc-color:#2E7D32;">
+          <div class="stat-icon">👷</div>
+          <div class="stat-val">142</div>
+          <div class="stat-lbl">Employees</div>
+          <div class="stat-chg">+12 new joins</div>
+        </div>
+        <div class="stat-card" style="--sc-color:#C62828;">
+          <div class="stat-icon">⚠️</div>
+          <div class="stat-val">5</div>
+          <div class="stat-lbl">Alerts</div>
+          <div class="stat-chg">3 critical</div>
+        </div>
+      </div>
+
+      <!-- Quick Modules -->
+      <div class="sec-head" style="margin-top:4px;"><div class="sec-title">Quick Access</div></div>
+      <div class="module-grid">
+        <div class="mod-btn" onclick="navTo('attendance')"><div class="mod-icon">📅</div><div class="mod-label">Attendance</div></div>
+        <div class="mod-btn" onclick="navTo('mrpogrann')"><div class="mod-icon">📦</div><div class="mod-label">MR/PO/GRN</div></div>
+        <div class="mod-btn" onclick="navTo('projects')"><div class="mod-icon">🏗️</div><div class="mod-label">Projects</div></div>
+        <div class="mod-btn" onclick="navTo('employees')"><div class="mod-icon">👷</div><div class="mod-label">Employees</div></div>
+        <div class="mod-btn" onclick="showToast('RA Bill module coming soon','info')"><div class="mod-icon">🧾</div><div class="mod-label">RA Bill</div></div>
+        <div class="mod-btn" onclick="showToast('Payment Ledger coming soon','info')"><div class="mod-icon">💰</div><div class="mod-label">Payments</div></div>
+        <div class="mod-btn" onclick="showToast('DSR module coming soon','info')"><div class="mod-icon">📝</div><div class="mod-label">DSR</div></div>
+        <div class="mod-btn" onclick="showToast('Reports module coming soon','info')"><div class="mod-icon">📈</div><div class="mod-label">Reports</div></div>
+      </div>
+
+      <!-- Alerts -->
+      <div class="sec-head"><div class="sec-title">🔔 Active Alerts</div><span class="sec-link" style="color:#C62828;">5 Pending</span></div>
+      <div class="alert-card ac-critical" onclick="showToast('DLP alert details','info')">
+        <div class="alert-label">🚨 Critical</div>
+        <div class="alert-title">DLP expiry in 7 days</div>
+        <div class="alert-sub">NH-48 Bypass · Due: 1 Mar 2026</div>
+      </div>
+      <div class="alert-card ac-high" onclick="showToast('Labour licence alert','info')">
+        <div class="alert-label">⚠️ High</div>
+        <div class="alert-title">Labour Licence expiry — Raj Infra</div>
+        <div class="alert-sub">Due: 15 Mar 2026</div>
+      </div>
+      <div class="alert-card ac-stock" onclick="showToast('Stock alert details','info')">
+        <div class="alert-label">📦 Stock Alert</div>
+        <div class="alert-title">Cement below minimum — Site 3</div>
+        <div class="alert-sub">45 bags remaining · Min: 200 bags</div>
+      </div>
+      <div class="alert-card ac-info" onclick="showToast('RA Bill details','info')">
+        <div class="alert-label">ℹ️ Medium</div>
+        <div class="alert-title">RA Bill due — Municipal Office</div>
+        <div class="alert-sub">Pending since 10 Feb 2026</div>
+      </div>
+      <div style="height:8px;"></div>
+    </div>
+
+    <!-- ═══ PROJECTS PAGE ═══ -->
+    <div class="page" id="page-projects">
+      <div class="sec-head">
+        <div class="sec-title">All Projects</div>
+        <button class="btn btn-outline btn-sm" onclick="showToast('Exported to Excel','success')">📥 Export</button>
+      </div>
+      <!-- Filter tabs -->
+      <div class="workflow-tabs" style="margin-bottom:14px;">
+        <div class="wf-tab active" onclick="filterProjects('all',this)">All (8)</div>
+        <div class="wf-tab" onclick="filterProjects('ongoing',this)">Ongoing (5)</div>
+        <div class="wf-tab" onclick="filterProjects('completed',this)">Done (2)</div>
+        <div class="wf-tab" onclick="filterProjects('hold',this)">Hold (1)</div>
+      </div>
+      <div id="projects-list"></div>
+      <div style="height:8px;"></div>
+    </div>
+
+    <!-- ═══ ATTENDANCE PAGE ═══ -->
+    <div class="page" id="page-attendance">
+      <div class="sec-head">
+        <div class="sec-title">📅 Attendance</div>
+        <span class="sec-link" style="font-size:11px;">23 Feb 2026</span>
+      </div>
+      <!-- Summary pills -->
+      <div style="display:flex;gap:8px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px;">
+        <div style="flex-shrink:0;padding:8px 14px;background:#E8F5E9;border-radius:20px;border:1px solid #A5D6A7;font-size:12px;font-weight:700;color:#2E7D32;">✅ Present: 18</div>
+        <div style="flex-shrink:0;padding:8px 14px;background:#FFEBEE;border-radius:20px;border:1px solid #EF9A9A;font-size:12px;font-weight:700;color:#C62828;">❌ Absent: 3</div>
+        <div style="flex-shrink:0;padding:8px 14px;background:#F3E5F5;border-radius:20px;border:1px solid #CE93D8;font-size:12px;font-weight:700;color:#6A1B9A;">🏖 Leave: 2</div>
+        <div style="flex-shrink:0;padding:8px 14px;background:#FFF8E1;border-radius:20px;border:1px solid #FFE082;font-size:12px;font-weight:700;color:#F57F17;">⏰ OT: 4.5h</div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">Attendance Register</div>
+          <button class="btn btn-success btn-sm" onclick="showToast('Attendance saved!','success')">💾 Save</button>
+        </div>
+        <div class="card-body" id="att-list"></div>
+      </div>
+      <div style="height:8px;"></div>
+    </div>
+
+    <!-- ═══ MR PO GRN PAGE ═══ -->
+    <div class="page" id="page-mrpogrann">
+      <div class="sec-head">
+        <div class="sec-title">MR → PO → GRN</div>
+        <button class="btn btn-primary btn-sm" onclick="showToast('New MR form opening...','info')">+ New</button>
+      </div>
+      <div class="workflow-tabs">
+        <div class="wf-tab active" onclick="switchWf('mr',this)">📋 MR (4)</div>
+        <div class="wf-tab" onclick="switchWf('po',this)">📦 PO (3)</div>
+        <div class="wf-tab" onclick="switchWf('grn',this)">✅ GRN (2)</div>
+      </div>
+      <div id="wf-list"></div>
+      <div style="height:8px;"></div>
+    </div>
+
+    <!-- ═══ EMPLOYEES PAGE ═══ -->
+    <div class="page" id="page-employees">
+      <div class="sec-head">
+        <div class="sec-title">👷 Employees</div>
+        <button class="btn btn-primary btn-sm" onclick="showToast('Add Employee form coming soon','info')">+ Add</button>
+      </div>
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input class="search-bar" placeholder="Search employees..." oninput="filterEmp(this.value)">
+      </div>
+      <div class="card">
+        <div class="card-body" id="emp-list" style="padding:0 16px;"></div>
+      </div>
+      <div style="height:8px;"></div>
+    </div>
+
+  </div><!-- end main-scroll -->
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <div class="nav-item active" id="nav-home" onclick="navTo('home')">
+      <div class="nav-icon">🏠</div>
+      <div class="nav-label">Home</div>
+    </div>
+    <div class="nav-item" id="nav-projects" onclick="navTo('projects')">
+      <div class="nav-icon">🏗️</div>
+      <div class="nav-label">Projects</div>
+    </div>
+    <div class="nav-item" id="nav-attendance" onclick="navTo('attendance')">
+      <div class="nav-icon">📅</div>
+      <div class="nav-label">Attendance</div>
+    </div>
+    <div class="nav-item" id="nav-mrpogrann" onclick="navTo('mrpogrann')">
+      <div class="nav-icon">📦</div>
+      <div class="nav-label">MR/PO/GRN</div>
+    </div>
+    <div class="nav-item" id="nav-employees" onclick="navTo('employees')">
+      <div class="nav-icon">👷</div>
+      <div class="nav-label">Employees</div>
+    </div>
+  </nav>
+
+  <!-- FAB -->
+  <button class="fab" onclick="showToast('Quick action menu coming soon','info')">＋</button>
+
+</div>
+
+<!-- ═══ PUNCH MODAL (Bottom Sheet) ═══ -->
+<div class="sheet-overlay" id="punch-overlay" onclick="closePunchModal()"></div>
+<div class="sheet" id="punch-sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-head">
+    <div class="sheet-title" id="punch-sheet-title">📍 Punch In</div>
+    <span class="sheet-close" onclick="closePunchModal()">✕</span>
+  </div>
+  <div class="sheet-body">
+    <div class="selfie-ring" id="selfie-ring" onclick="takeSelfie()">
+      <span id="selfie-emoji">📷</span>
+    </div>
+    <div style="text-align:center;font-size:12px;color:var(--text3);margin-bottom:16px;">Tap to take selfie (required)</div>
+    <div class="gps-info-box">
+      <div class="gps-info-row" style="margin-bottom:8px;">
+        <span class="gps-info-label">📍 Location</span>
+        <span class="gps-info-val" id="modal-loc">18.5204°N, 73.8567°E</span>
+      </div>
+      <div class="gps-info-row" style="margin-bottom:8px;">
+        <span class="gps-info-label">Accuracy</span>
+        <span class="gps-info-val" style="color:var(--green);">±5m</span>
+      </div>
+      <div class="gps-info-row">
+        <span class="gps-info-label">Distance from Site</span>
+        <span class="gps-info-val" style="color:var(--green);">58m ✅</span>
+      </div>
+    </div>
+    <label class="flabel">Punch Time</label>
+    <input type="time" class="finput" id="punch-time-input" style="font-family:'JetBrains Mono',monospace;font-size:18px;">
+    <label class="flabel">Remarks (Optional)</label>
+    <input type="text" class="finput" placeholder="e.g. Came late due to traffic">
+  </div>
+  <div class="sheet-foot">
+    <button class="btn btn-outline" onclick="closePunchModal()">Cancel</button>
+    <button class="btn btn-success" id="confirm-punch" onclick="confirmPunch()">✅ Confirm Punch In</button>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<script>
+// ═══════════════ DATA ═══════════════
+const USERS = [
+  { mobile:'9999999999', pwd:'admin123',  name:'Admin User',   role:'Administrator',   init:'AU', color:'#1565C0' },
+  { mobile:'9888888888', pwd:'pm123',     name:'Kavita Joshi', role:'Project Manager', init:'KJ', color:'#00838F' },
+  { mobile:'9777777777', pwd:'eng123',    name:'Rajesh Kumar', role:'Site Engineer',   init:'RK', color:'#2E7D32' },
+  { mobile:'9666666666', pwd:'acc123',    name:'Priya Sharma', role:'Accountant',      init:'PS', color:'#E65100' },
+  { mobile:'9555555555', pwd:'store123',  name:'Amit Desai',   role:'Store Keeper',    init:'AD', color:'#7B1FA2' },
+];
+
+const PROJECTS = [
+  { id:'PRJ001', name:'NH-48 Bypass Road Construction', client:'NHAI', type:'Road',     contract:'₹8.5 Cr', progress:68, status:'ongoing',   days:48,  color:'#0EA5E9', team:['RK','SP','AM'] },
+  { id:'PRJ002', name:'Municipal Office Block',         client:'PMC',  type:'Building', contract:'₹6.2 Cr', progress:45, status:'ongoing',   days:120, color:'#F97316', team:['KJ','PD'] },
+  { id:'PRJ003', name:'Riverfront Drainage Network',    client:'MCGM', type:'Drainage', contract:'₹4.8 Cr', progress:82, status:'ongoing',   days:25,  color:'#10B981', team:['AD','VK'] },
+  { id:'PRJ004', name:'Bridge Rehabilitation Work',     client:'PWD',  type:'Bridge',   contract:'₹5.3 Cr', progress:25, status:'ongoing',   days:210, color:'#EF4444', team:['MR','SK'] },
+  { id:'PRJ005', name:'Water Supply Pipeline',          client:'MIDC', type:'Water',    contract:'₹3.6 Cr', progress:100,status:'completed', days:0,   color:'#0EA5E9', team:['BB'] },
+  { id:'PRJ006', name:'Township Road Network',          client:'CIDCO',type:'Road',     contract:'₹7.1 Cr', progress:100,status:'completed', days:0,   color:'#8B5CF6', team:['AK'] },
+  { id:'PRJ007', name:'School Building Construction',   client:'ZP',   type:'Building', contract:'₹2.9 Cr', progress:0,  status:'hold',      days:180, color:'#FBBF24', team:['RS'] },
+  { id:'PRJ008', name:'Storm Water Drain',              client:'PCMC', type:'Drainage', contract:'₹1.8 Cr', progress:55, status:'ongoing',   days:95,  color:'#14B8A6', team:['VR'] },
+];
+
+const EMPLOYEES = [
+  { id:'EMP001', name:'Rajesh Kumar',  desig:'Site Engineer',   dept:'Site',       project:'NH-48 Bypass',   init:'RK', color:'#1565C0', status:'present', in:'08:42' },
+  { id:'EMP002', name:'Priya Sharma',  desig:'Accountant',      dept:'Accounts',   project:'Head Office',    init:'PS', color:'#00838F', status:'present', in:'09:05' },
+  { id:'EMP003', name:'Suresh Patil',  desig:'Supervisor',      dept:'Site',       project:'Municipal Office',init:'SP', color:'#2E7D32', status:'present', in:'08:55' },
+  { id:'EMP004', name:'Amit Desai',    desig:'Store Keeper',    dept:'Purchase',   project:'Riverfront',     init:'AD', color:'#E65100', status:'absent',  in:'' },
+  { id:'EMP005', name:'Kavita Joshi',  desig:'Project Manager', dept:'Management', project:'Multiple',       init:'KJ', color:'#7B1FA2', status:'present', in:'09:10' },
+  { id:'EMP006', name:'Mahesh Borse',  desig:'Labour Supervisor',dept:'Site',      project:'NH-48 Bypass',   init:'MB', color:'#C62828', status:'leave',   in:'' },
+  { id:'EMP007', name:'Dinesh Rane',   desig:'Bar Bender',      dept:'Site',       project:'NH-48 Bypass',   init:'DR', color:'#37474F', status:'present', in:'08:40' },
+];
+
+const MR_DATA = [
+  { id:'AIPL-MR-001', title:'Cement & Aggregate Requirement', date:'10 Feb 2026', status:'approved', amount:'₹2,14,500', by:'Rajesh Kumar' },
+  { id:'AIPL-MR-002', title:'TMT Steel Bars Requirement',     date:'14 Feb 2026', status:'approved', amount:'₹1,87,500', by:'Rajesh Kumar' },
+  { id:'AIPL-MR-003', title:'Bricks & Mortar Material',       date:'18 Feb 2026', status:'pending',  amount:'₹68,000',   by:'Suresh Patil' },
+  { id:'AIPL-MR-004', title:'Waterproofing Compound',         date:'21 Feb 2026', status:'draft',    amount:'₹32,000',   by:'Rajesh Kumar' },
+];
+
+const PO_DATA = [
+  { id:'AIPL-PO-001', title:'Cement — Shree Cement Ltd', date:'12 Feb 2026', status:'received', amount:'₹2,12,800', by:'Shree Cement' },
+  { id:'AIPL-PO-002', title:'TMT Steel — Tata Steel Ltd', date:'15 Feb 2026', status:'partial',  amount:'₹1,91,250', by:'Tata Steel' },
+  { id:'AIPL-PO-003', title:'Aggregate — M/s Patil',      date:'20 Feb 2026', status:'pending',  amount:'₹45,000',   by:'M/s Patil' },
+];
+
+const GRN_DATA = [
+  { id:'AIPL-GRN-001', title:'Cement — 200 Bags received',  date:'20 Feb 2026', status:'approved', amount:'₹85,120',    by:'Shree Cement' },
+  { id:'AIPL-GRN-002', title:'TMT Steel — 2 MT received',   date:'22 Feb 2026', status:'pending',  amount:'₹1,36,880', by:'Tata Steel' },
+];
+
+// ═══════════════ STATE ═══════════════
+let currentUser = null;
+let currentPage = 'home';
+let isPunchedIn = false;
+let punchInTime = null;
+let selfieOk = false;
+let currentWf = 'mr';
+let selfieTimer;
+
+// ═══════════════ CLOCK ═══════════════
+function tick() {
+  const now = new Date();
+  const time = now.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false });
+  const date = now.toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+  const el = document.getElementById('hero-clock');
+  if (el) el.textContent = time;
+  const de = document.getElementById('hero-date');
+  if (de) de.textContent = date;
+  const ti = document.getElementById('punch-time-input');
+  if (ti && !isPunchedIn) ti.value = time.slice(0,5);
+}
+tick();
+setInterval(tick, 1000);
+
+// ═══════════════ GPS ═══════════════
+setTimeout(() => {
+  document.getElementById('gps-dot').style.background = '#43A047';
+  document.getElementById('gps-label').textContent = '📍 On-Site · 58m';
+}, 2500);
+
+// ═══════════════ LOGIN ═══════════════
+function doLogin() {
+  const mob = document.getElementById('login-mobile').value.trim();
+  const pwd = document.getElementById('login-pwd').value;
+  const err = document.getElementById('login-err');
+  const user = USERS.find(u => u.mobile === mob && u.pwd === pwd);
+  if (!user) { err.style.display = 'block'; return; }
+  err.style.display = 'none';
+  currentUser = user;
+  // Update UI
+  document.getElementById('topbar-avatar').style.background = user.color;
+  document.getElementById('topbar-avatar').textContent = user.init;
+  document.getElementById('topbar-name').textContent = user.name.split(' ')[0];
+  document.getElementById('drawer-avatar').style.background = user.color;
+  document.getElementById('drawer-avatar').textContent = user.init;
+  document.getElementById('drawer-name').textContent = user.name;
+  document.getElementById('drawer-role').textContent = user.role;
+  // Show app
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  renderAll();
+  showToast(`Welcome, ${user.name.split(' ')[0]}! 🎉`, 'success');
+}
+
+function doLogout() {
+  currentUser = null;
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('login-mobile').value = '';
+  document.getElementById('login-pwd').value = '';
+  closeDrawer();
+  showToast('Logged out successfully', 'info');
+}
+
+function togglePwd() {
+  const i = document.getElementById('login-pwd');
+  i.type = i.type === 'password' ? 'text' : 'password';
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('login-screen').style.display !== 'none') doLogin();
+});
+
+// ═══════════════ NAVIGATION ═══════════════
+const PAGES = ['home','projects','attendance','mrpogrann','employees'];
+
+function navTo(page) {
+  PAGES.forEach(p => {
+    const el = document.getElementById('page-' + p);
+    const nav = document.getElementById('nav-' + p);
+    if (el) el.classList.toggle('active', p === page);
+    if (nav) nav.classList.toggle('active', p === page);
+  });
+  currentPage = page;
+  window.scrollTo(0, 0);
+}
+
+// ═══════════════ DRAWER ═══════════════
+function toggleDrawer() {
+  document.getElementById('drawer').classList.toggle('open');
+  document.getElementById('drawer-overlay').classList.toggle('open');
+}
+function closeDrawer() {
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawer-overlay').classList.remove('open');
+}
+
+// ═══════════════ PUNCH ═══════════════
+function openPunchModal() {
+  const sheet = document.getElementById('punch-sheet');
+  const overlay = document.getElementById('punch-overlay');
+  const title = document.getElementById('punch-sheet-title');
+  const btn = document.getElementById('confirm-punch');
+  if (isPunchedIn) {
+    title.textContent = '⏹ Punch Out';
+    btn.textContent = '⏹ Confirm Punch Out';
+    btn.className = 'btn btn-danger';
+  } else {
+    title.textContent = '📍 Punch In';
+    btn.textContent = '✅ Confirm Punch In';
+    btn.className = 'btn btn-success';
+  }
+  selfieOk = false;
+  document.getElementById('selfie-emoji').textContent = '📷';
+  document.getElementById('selfie-ring').className = 'selfie-ring';
+  sheet.classList.add('open');
+  overlay.classList.add('open');
+}
+
+function closePunchModal() {
+  document.getElementById('punch-sheet').classList.remove('open');
+  document.getElementById('punch-overlay').classList.remove('open');
+}
+
+function takeSelfie() {
+  const ring = document.getElementById('selfie-ring');
+  const emoji = document.getElementById('selfie-emoji');
+  emoji.textContent = '⏳';
+  clearTimeout(selfieTimer);
+  selfieTimer = setTimeout(() => {
+    selfieOk = true;
+    emoji.textContent = '🤳';
+    ring.className = 'selfie-ring taken';
+    showToast('Selfie captured ✓', 'success');
+  }, 1000);
+}
+
+function confirmPunch() {
+  if (!selfieOk) {
+    showToast('Please take a selfie first', 'warning');
+    document.getElementById('selfie-ring').style.borderColor = 'var(--red2)';
+    return;
+  }
+  const now = new Date();
+  if (!isPunchedIn) {
+    isPunchedIn = true;
+    punchInTime = now;
+    const btn = document.getElementById('punch-btn');
+    btn.className = 'punch-btn punch-out-btn';
+    btn.textContent = '⏹ Punch Out';
+    const t = now.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit', hour12: false });
+    document.getElementById('pss-mytime').textContent = `In: ${t}`;
+    showToast(`✅ Punched In at ${t} · GPS verified`, 'success');
+  } else {
+    isPunchedIn = false;
+    const diff = Math.round((now - punchInTime) / 60000);
+    const btn = document.getElementById('punch-btn');
+    btn.className = 'punch-btn punch-in-btn';
+    btn.textContent = '📍 Punch In';
+    document.getElementById('pss-mytime').textContent = `${Math.floor(diff/60)}h ${diff%60}m`;
+    showToast(`✅ Punched Out · ${Math.floor(diff/60)}h ${diff%60}m logged`, 'success');
+  }
+  closePunchModal();
+}
+
+// ═══════════════ RENDER PROJECTS ═══════════════
+function renderProjects(filter = 'all') {
+  const list = document.getElementById('projects-list');
+  const pColor = p => p >= 70 ? '#2E7D32' : p >= 40 ? '#E65100' : '#C62828';
+  const bClass = { ongoing:'b-ongoing', completed:'b-completed', hold:'b-hold' };
+  const bLabel = { ongoing:'● Ongoing', completed:'✓ Completed', hold:'⏸ On Hold' };
+  const filtered = filter === 'all' ? PROJECTS : PROJECTS.filter(p => p.status === filter);
+  list.innerHTML = filtered.map(p => `
+    <div class="proj-card" onclick="showToast('Opening ${p.name}...','info')">
+      <div class="proj-card-bar" style="background:${p.color};"></div>
+      <div class="proj-card-body">
+        <div class="proj-card-row1">
+          <div class="proj-name">${p.name}</div>
+          <span class="proj-badge ${bClass[p.status]}">${bLabel[p.status]}</span>
+        </div>
+        <div class="proj-client">🤝 ${p.client} · ${p.type}</div>
+        <div class="proj-meta-row">
+          <div class="proj-meta-item"><div class="proj-meta-label">Contract</div><div class="proj-meta-val">${p.contract}</div></div>
+          <div class="proj-meta-item"><div class="proj-meta-label">ID</div><div class="proj-meta-val" style="color:var(--blue);font-size:11px;">${p.id}</div></div>
+        </div>
+        <div class="proj-progress-wrap">
+          <div class="proj-prog-row">
+            <span>Physical Progress</span>
+            <span style="font-weight:800;color:${pColor(p.progress)};">${p.progress}%</span>
+          </div>
+          <div class="proj-prog-bar">
+            <div class="proj-prog-fill" style="width:${p.progress}%;background:${p.color};"></div>
+          </div>
+        </div>
+      </div>
+      <div class="proj-card-foot">
+        <div class="proj-days" style="color:${p.days < 30 ? 'var(--red)' : p.days < 60 ? 'var(--orange)' : 'var(--text3)'};">
+          ${p.status === 'completed' ? '✅ Completed' : `⏱ ${p.days} days left`}
+        </div>
+        <div class="proj-team">
+          ${p.team.map((t,i) => `<div class="proj-team-av" style="background:hsl(${i*80},50%,40%);margin-left:${i>0?'-6px':'0'};">${t}</div>`).join('')}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterProjects(filter, el) {
+  document.querySelectorAll('.workflow-tabs .wf-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderProjects(filter);
+}
+
+// ═══════════════ RENDER ATTENDANCE ═══════════════
+function renderAttendance() {
+  const list = document.getElementById('att-list');
+  const bCls = { present:'p on', absent:'a on', leave:'l on', half:'h on' };
+  list.innerHTML = EMPLOYEES.map((e, idx) => `
+    <div class="att-row">
+      <div class="att-av" style="background:${e.color};">${e.init}</div>
+      <div class="att-info">
+        <div class="att-name">${e.name}</div>
+        <div class="att-desig">${e.desig}</div>
+        ${e.in ? `<div class="att-time">In: ${e.in}</div>` : ''}
+      </div>
+      <div class="att-actions">
+        <div class="att-status-row">
+          <button class="ss-btn ${e.status==='present'?'p on':'p'}" onclick="setAtt(${idx},'present',this)">P</button>
+          <button class="ss-btn ${e.status==='absent'?'a on':'a'}" onclick="setAtt(${idx},'absent',this)">A</button>
+          <button class="ss-btn ${e.status==='half'?'h on':'h'}" onclick="setAtt(${idx},'half',this)">½</button>
+          <button class="ss-btn ${e.status==='leave'?'l on':'l'}" onclick="setAtt(${idx},'leave',this)">L</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function setAtt(idx, status, btn) {
+  EMPLOYEES[idx].status = status;
+  const row = btn.closest('.att-row');
+  row.querySelectorAll('.ss-btn').forEach(b => {
+    const cls = ['p','a','h','l'].find(c => b.classList.contains(c));
+    b.className = `ss-btn ${cls}${b === btn ? ' on' : ''}`;
+  });
+  showToast(`${EMPLOYEES[idx].name} → ${status}`, 'success');
+}
+
+// ═══════════════ RENDER MR/PO/GRN ═══════════════
+function renderWfList(type) {
+  const list = document.getElementById('wf-list');
+  const data = type === 'mr' ? MR_DATA : type === 'po' ? PO_DATA : GRN_DATA;
+  const bMap = { approved:'badge-green', pending:'badge-amber', draft:'badge-gray', partial:'badge-amber', received:'badge-green' };
+  list.innerHTML = data.map(item => `
+    <div class="wf-item" onclick="showToast('Opening ${item.id}...','info')">
+      <div class="wf-item-top">
+        <div>
+          <div class="wf-id">${item.id}</div>
+          <div class="wf-title">${item.title}</div>
+        </div>
+        <span class="badge ${bMap[item.status]}">${item.status}</span>
+      </div>
+      <div class="wf-meta">📅 ${item.date} · By ${item.by}</div>
+      <div class="wf-bottom">
+        <div class="wf-amount">${item.amount}</div>
+        <div style="display:flex;gap:6px;">
+          ${item.status === 'pending' ? `<button class="btn btn-success btn-sm" onclick="event.stopPropagation();showToast('${item.id} approved! ✓','success')">✅ Approve</button>` : ''}
+          <button class="btn btn-outline btn-sm" onclick="event.stopPropagation();showToast('Viewing ${item.id}','info')">View</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function switchWf(type, el) {
+  document.querySelectorAll('.workflow-tabs .wf-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  currentWf = type;
+  renderWfList(type);
+}
+
+// ═══════════════ RENDER EMPLOYEES ═══════════════
+function renderEmployees(filter = '') {
+  const list = document.getElementById('emp-list');
+  const filtered = EMPLOYEES.filter(e =>
+    !filter || e.name.toLowerCase().includes(filter.toLowerCase()) || e.desig.toLowerCase().includes(filter.toLowerCase())
+  );
+  list.innerHTML = filtered.map(e => `
+    <div class="emp-row" onclick="showToast('Opening ${e.name} profile...','info')">
+      <div class="emp-av" style="background:${e.color};">${e.init}</div>
+      <div class="emp-info">
+        <div class="emp-name">${e.name}</div>
+        <div class="emp-desig">${e.desig} · ${e.dept}</div>
+        <div class="emp-proj">📍 ${e.project}</div>
+      </div>
+      <div class="emp-arrow">›</div>
+    </div>
+  `).join('');
+}
+
+function filterEmp(v) { renderEmployees(v); }
+
+// ═══════════════ RENDER ALL ═══════════════
+function renderAll() {
+  renderProjects();
+  renderAttendance();
+  renderWfList('mr');
+  renderEmployees();
+}
+
+// ═══════════════ TOAST ═══════════════
+function showToast(msg, type = 'success') {
+  const wrap = document.getElementById('toast-wrap');
+  const colors = { success:'#43A047', error:'#E53935', info:'#1565C0', warning:'#F57F17' };
+  const icons  = { success:'✅', error:'❌', info:'ℹ️', warning:'⚠️' };
+  const div = document.createElement('div');
+  div.className = 'toast-item';
+  div.style.setProperty('--toast-color', colors[type] || colors.info);
+  div.innerHTML = `<span>${icons[type]||'ℹ️'}</span><span>${msg}</span>`;
+  wrap.appendChild(div);
+  setTimeout(() => { div.style.opacity = '0'; div.style.transform = 'translateY(-10px)'; setTimeout(() => div.remove(), 300); }, 3000);
+}
+</script>
+</body>
+</html>
